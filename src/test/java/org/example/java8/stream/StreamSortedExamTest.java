@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * 참고사이트
@@ -24,6 +25,30 @@ class StreamSortedExamTest {
     }
 
     /**
+     * syntax : Comparator<T> comparing(
+     *              Function<? super T, ? extends U> keyExtractor,
+     *              Comparator<? super U> keyComparator
+     *          )
+     */
+    @Test
+    void intList() {
+        System.out.printf("" +
+                "\n<< 숫자정렬 >>" +
+                "\n 1. 1~100 까지의 값에서 마지막 1자리에 값으로만 정렬한다." +
+                "\n"
+        );
+        IntStream.range(1, 100)
+                .mapToObj(String::valueOf)
+                .sorted(Comparator.comparing(String::valueOf, (s1, s2) -> {
+                    return s1.charAt(s1.length()-1) - s2.charAt(s2.length()-1);
+                }))
+                .forEach(System.out::println);
+                ;
+    }
+
+    /**
+     * syntax : Comparator<T> comparing(Function<? super T, ? extends U> keyExtractor)
+     *
      * 문자열 정렬
      * 1. 하나의 항목으로 정렬
      * 2. n개의 항목을 and 조건으로 정렬
@@ -72,11 +97,13 @@ class StreamSortedExamTest {
                 "\n"
         );
         List<Employee> cityList = Arrays.asList(
-                new Employee("서울", 35, 700)
-                , new Employee("대구", 44, 800)
-                , new Employee("부산", 46, 800)
-                , new Employee("부천", 48, 800)
-                , new Employee("인천", 49, 880)
+                new Employee("홍길동", 35, 770)
+                , new Employee("이순신", 36, 740)
+                , new Employee("이육사", 37, 780)
+                , new Employee("심사임당", 44, 800)
+                , new Employee("이익", 46, 800)
+                , new Employee("정약용", 48, 800)
+                , new Employee("세종대왕", 49, 880)
                 , new Employee("용인", 36, 880)
                 , new Employee("진안", 48, 900)
         );
@@ -85,16 +112,22 @@ class StreamSortedExamTest {
                 .sorted(Comparator.comparing(Employee::getSalary).reversed().thenComparing(Employee::getAge))
                 .forEach(System.out::println);
 
-        System.out.println("<< 정렬키를 지정 후 정렬키의 값으로 정렬 >>" +
+        System.out.println("\n<< 정렬키를 지정 후 정렬키의 값으로 정렬 >>" +
                 "\n - 인자1 : 비교할 요소" +
                 "\n - 인자2 : 정렬키 (compare구현)(나이의 마지막숫자만 정렬)");
         cityList.stream()
-                .sorted(Comparator.comparing(Employee::getAge, (s1, s2)-> {
+//                .sorted(Comparator.comparing(Employee::getAge, (s1, s2)-> {
 //                    return s1.compareTo(s2);
-                    String str1 = s1.toString();
-                    String str2 = s2.toString();
-                    return str1.charAt(str1.length()-1) - str2.charAt(str2.length()-1);
-                }).thenComparing(Employee::getSalary))
+//                })
+//                .sorted(Comparator.comparing(Employee::getAge, (s1, s2)-> {
+//                            String str1 = s1.toString();
+//                            String str2 = s2.toString();
+//                            return str1.charAt(str1.length()-1) - str2.charAt(str2.length()-1);
+//                })
+                .sorted(Comparator.comparing(Employee::getSalary, (s1, s2)-> {
+                    // 급여 100단위별로 정렬
+                    return (s1.intValue()/100) - (s2.intValue()/100);
+                }).thenComparing(Employee::getAge))
                 .forEach(System.out::println);
 
     }
