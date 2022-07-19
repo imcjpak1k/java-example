@@ -31,7 +31,7 @@ class CollectorExamTest {
     }
 
     /**
-     * Collector 인터페이스는 4개의 함수를 다음과 같은 순서로 실행되나보다...
+     * Collector 인터페이스는 4개의 함수를 다음과 같은 순서로 구현되나 보다
      */
     @Test
     void ex() {
