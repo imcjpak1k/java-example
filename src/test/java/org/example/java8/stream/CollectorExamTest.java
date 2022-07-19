@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -67,10 +68,18 @@ class CollectorExamTest {
         System.out.println(sb1);
         System.out.println(sb2);
 
-//        combiner.apply(sb1, sb2);
 
         // finisher
+        Function<StringBuilder, StringBuilder> finisher = (s) -> s.insert(0, "finisher : >> ");
+
         System.out.println("Combiner 결과값");
-        System.out.println(combiner.apply(sb1, sb2));
+        System.out.println(finisher.apply(combiner.apply(sb1, sb2)));
+    }
+
+    /**
+     *
+     */
+    void exam1() {
+
     }
 }
