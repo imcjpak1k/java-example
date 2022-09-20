@@ -479,7 +479,11 @@ public class StreamExamTest {
     @Test
     public void reduce() {
         List<String> strings = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
-//        Optional<String> reduce0 = strings.stream().reduce(String::concat);
+//        Optional<String> reduce0 = strings.stream().reduce(String::concat)
+//        ;
+
+
+
         System.out.println("문자열 합치기 :" + strings.stream().reduce(String::concat).get());
         System.out.println("문자열 합치기 :" + strings.stream().reduce((a,b)->a.concat(b)).get());
 
