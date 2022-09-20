@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -477,6 +478,17 @@ public class StreamExamTest {
      */
     @Test
     public void reduce() {
+        List<String> strings = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+//        Optional<String> reduce0 = strings.stream().reduce(String::concat);
+        System.out.println("문자열 합치기 :" + strings.stream().reduce(String::concat).get());
+        System.out.println("문자열 합치기 :" + strings.stream().reduce((a,b)->a.concat(b)).get());
+
+        Optional<BigDecimal> sum = IntStream.range(1, 11)
+                .boxed()
+                .map(BigDecimal::new)
+                .reduce(BigDecimal::add);
+        System.out.println("1~10 합계(초기값 0) \t==> 1 + 2 + .... + 10  : "+ sum.get());
+
         // 1~10합
         Optional<Integer> reduce1 = IntStream.range(1, 11)
                 .boxed()
