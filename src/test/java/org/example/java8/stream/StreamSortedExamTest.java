@@ -1,13 +1,16 @@
 package org.example.java8.stream;
 
+import org.example.java8.util.VoBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * 참고사이트
@@ -132,6 +135,62 @@ class StreamSortedExamTest {
 
     }
 
+    /**
+     * 정렬....
+     */
+    @Test
+    public void divdVoSort() {
+        System.out.println(BigDecimal.TEN.compareTo(BigDecimal.ZERO));
+        System.out.println(BigDecimal.ZERO.compareTo(BigDecimal.TEN));
+        System.out.println("<< VO목록 정렬 >>");
+        System.out.println("배당적용율과 괴리값이 가장 큰 VO를 먼저 먼저배당하도록 한다.");
+        System.out.println("<정렬조건>");
+        System.out.println(" 1. 배당율이 작은건");
+        System.out.println(" 2. 배당괴리율(적용배당율-배당율)이 큰건");
+
+        DivdVo v1 = VoBuilder.build(DivdVo::new)
+                .with(DivdVo::setName, "길규환")
+                .with(DivdVo::setHighPriority, false)
+                .with(DivdVo::setDivdApRt, new BigDecimal("64.3"))    // 적용배당율
+                .with(DivdVo::setDivdRt, new BigDecimal("55.6"))       // 실배당율
+                .get();
+        DivdVo v2 = VoBuilder.build(DivdVo::new)
+                .with(DivdVo::setName, "이민아")
+                .with(DivdVo::setHighPriority, false)
+                .with(DivdVo::setDivdApRt, new BigDecimal("21.4"))
+                .with(DivdVo::setDivdRt, new BigDecimal("22.2"))
+                .get();
+        DivdVo v3 = VoBuilder.build(DivdVo::new)
+                .with(DivdVo::setName, "이규민")
+                .with(DivdVo::setHighPriority, false)
+                .with(DivdVo::setDivdApRt, new BigDecimal("14.3"))
+                .with(DivdVo::setDivdRt, new BigDecimal("22.2"))
+                .get();
+
+
+        // 정렬순서1) 우선순위
+//        Comparator<DivdVo> comparing1 = Comparator.comparing(DivdVo::isHighPriority);
+        Comparator<DivdVo> comparing1 = Comparator.comparing(v->v.isHighPriority() ? 0 : 9);
+        // 정렬순서2) 배당괴리울 오름차순
+        Comparator<DivdVo> comparing2 = Comparator.comparing(v->v.getDivdApRt().subtract(v.divdRt));
+        // 정렬순서3) 배당건수 오름차순
+        Comparator<DivdVo> comparing3 = Comparator.comparing(DivdVo::getDivdRt);
+
+//        // 조건1 + 조건2 ..음... 내림차순 정렬로 변경시 데이터가 달라질듯.. ㅡㅡ;;; 테스트 안해봄.. ㅋㅋ
+//        Comparator<DivdVo> comparing =
+//                Comparator.comparing(DivdVo::getDivdRt)
+//                        .thenComparing(Comparator.comparing(v->v.getDivdApRt().subtract(v.getDivdRt())));
+
+        Stream.of(v1,v2,v3)
+//                .filter(c1 -> c1.getDivdApRt().compareTo(c1.getDivdRt()) != -1)
+//                .sorted(Comparator.comparing(DivdVo::getDivdRt)
+//                        .thenComparing(v->v.getDivdApRt().subtract(v.divdRt)).reversed()
+//                )
+                .sorted(comparing1.thenComparing(comparing2.reversed().thenComparing(comparing3)))
+                .forEach(System.out::println);
+                ;
+    }
+
 
     class Employee {
         private String name;
@@ -170,6 +229,62 @@ class StreamSortedExamTest {
         @Override
         public String toString() {
             return String.format("이름:%s, 나이:%d, 급여:%d", name, age, salary);
+        }
+    }
+
+
+
+    /**
+     * 배당적용
+     */
+    class DivdVo {
+        private String name;
+        private boolean highPriority;
+        private BigDecimal divdApRt;
+        private BigDecimal divdRt;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public BigDecimal getDivdApRt() {
+            return divdApRt;
+        }
+
+        public void setDivdApRt(BigDecimal divdApRt) {
+            this.divdApRt = divdApRt;
+        }
+
+        public BigDecimal getDivdRt() {
+            return divdRt;
+        }
+
+        public void setDivdRt(BigDecimal divdRt) {
+            this.divdRt = divdRt;
+        }
+
+        public boolean isHighPriority() {
+            return highPriority;
+        }
+
+        public void setHighPriority(boolean highPriority) {
+            this.highPriority = highPriority;
+        }
+
+        public BigDecimal getDivdRtDif() {
+            // 배당율이 적용보다율보다 크거나 같으면 0으로...
+            if(divdRt.compareTo(divdApRt) != -1) {
+                return BigDecimal.ZERO;
+            }
+            return this.divdApRt.subtract(divdRt);
+        }
+        @Override
+        public String toString() {
+            return "name:"+ this.name +", divdApRt:"+ this.divdApRt +", divdRt:"+ divdRt + ",rtdiff:"+ divdApRt.subtract(divdRt);
         }
     }
 }

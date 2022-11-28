@@ -2,8 +2,11 @@ package org.example.java8.stream;
 
 
 
+import org.example.java8.stream.vo.DivdVo;
 import org.example.java8.stream.vo.ReportCardVo;
+import org.example.java8.util.VoBuilder;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -13,12 +16,12 @@ import static java.util.stream.Collectors.*;
 
 public class SortExam {
     public static void main(String[] args) {
-        stringSort();
-        integerSort();
+//        stringSort();
+//        integerSort();
         voSort();
-        rankVoSort01();
-        rankVoSort02();
-        rankVoSort03();
+//        rankVoSort01();
+//        rankVoSort02();
+//        rankVoSort03();
     }
 
 
@@ -33,6 +36,34 @@ public class SortExam {
 
     public static void voSort() {
         System.out.println("<< VO목록 정렬 >>");
+        System.out.println("배당적용율과 괴리값이 가장 큰 VO를 먼저 먼저배당하도록 한다.");
+
+        DivdVo v1 = VoBuilder.build(DivdVo::new)
+                .with(DivdVo::setName, "길규환")
+                .with(DivdVo::setDivdApRt, new BigDecimal("87"))    // 적용배당율
+                .with(DivdVo::setDivdRt, new BigDecimal("50"))       // 실배당율
+                .get();
+        DivdVo v2 = VoBuilder.build(DivdVo::new)
+                .with(DivdVo::setName, "이민아")
+                .with(DivdVo::setDivdApRt, new BigDecimal("13"))
+                .with(DivdVo::setDivdRt, new BigDecimal("50"))
+                .get();
+        DivdVo v3 = VoBuilder.build(DivdVo::new)
+                .with(DivdVo::setName, "이민아")
+                .with(DivdVo::setDivdApRt, new BigDecimal("10"))
+                .with(DivdVo::setDivdRt, new BigDecimal("0"))
+                .get();
+
+        Stream.of(v1,v2,v3)
+                .peek(System.out::println)
+                .filter(c1 -> c1.getDivdApRt().compareTo(c1.getDivdRt()) != -1)
+                .sorted((c1,c2)-> {
+                    BigDecimal _v1 = c1.getDivdApRt().subtract(c1.getDivdRt());
+                    BigDecimal _v2 = c2.getDivdApRt().subtract(c2.getDivdRt());
+                    System.out.println(String.format(">> %s, %s = %s", _v1,_v2, _v1.compareTo(_v2)));
+                    return _v1.compareTo(_v2);
+                })
+                .forEach(System.out::println);
     }
 
     /**

@@ -73,15 +73,23 @@ public class VoBuilder<T> {
      * @param setter
      * @param v
      * @return
-     * @param <V>
      */
     public <V> VoBuilder<T> with(BiConsumer<T, V> setter, V v) {
         if(ifContinue) {
             setter.accept(instance, v);
         }
 
+
+
         return this;
     }
+//    public <S> VoBuilder<T> with(BiConsumer<T, S> setter, S s) {
+//        if(ifContinue) {
+//            setter.accept(instance, s);
+//        }
+//
+//        return this;
+//    }
 
     /**
      * 인턴스객체반환
